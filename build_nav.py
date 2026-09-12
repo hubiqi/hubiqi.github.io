@@ -16,6 +16,11 @@ TOKEN = (os.environ.get('GITHUB_TOKEN') or os.environ.get('GH_TOKEN')
 OWNER = os.environ.get('NAV_OWNER') or 'hubiqi'
 ROOT_REPO = OWNER + '.github.io'
 
+# 手工维护的镜像地址：仓库名 -> [(标签, URL), ...]
+MIRRORS = {
+    'rider-dashboard': [('Cloudflare', 'https://rider-dashboard-rwq.pages.dev/')],
+}
+
 
 def api(path):
     req = urllib.request.Request(API + path)
@@ -79,6 +84,7 @@ PALETTE = [
 
 def build_html(projects):
     cards = []
+    mirrors = []
     for i, p in enumerate(projects):
         name = p['name']
         desc = (p.get('description') or '').strip() or '暂无描述'
@@ -95,10 +101,23 @@ def build_html(projects):
             '        <div class="meta"><span class="pill">/%s/</span><span class="time">%s</span></div>\n'
             '      </div>\n'
             '    </a>' % (url, c1, c2, esc(initial), esc(name), esc(desc), esc(name), esc(meta)))
+        # 手工维护的镜像地址（Cloudflare Pages 等）
+        for m_label, m_url in MIRRORS.get(name, []):
+            mirrors.append(
+                '    <a class="mcard" href="%s">\n'
+                '      <span class="mtag">%s</span>'
+                '      <span class="mname">%s</span>'
+                '      <span class="murl">%s</span>\n'
+                '    </a>' % (m_url, esc(m_label), esc(name), esc(m_url.split('//')[-1].rstrip('/'))))
 
     if not cards:
         cards.append('    <div class="empty">还没有已发布的项目。在任意仓库里开启 Pages 后，'
                      '这里会自动出现入口。</div>')
+
+    mirror_html = ''
+    if mirrors:
+        mirror_html = ('<div class="mwrap">\n  <div class="mhd">备用镜像</div>\n'
+                       '  <div class="mgrid">\n%s\n  </div>\n</div>' % '\n'.join(mirrors))
 
     now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
     stamp = now.strftime('%Y-%m-%d %H:%M')
@@ -139,6 +158,16 @@ body{margin:0;background:#f4f6fa;color:#101828;
 .time{font-size:11px;color:#98a2b3}
 .empty{grid-column:1/-1;text-align:center;color:#98a2b3;font-size:13px;padding:44px 20px;
   background:#fff;border-radius:15px;border:1px dashed #d0d5dd}
+.mwrap{margin-top:22px}
+.mhd{font-size:12px;color:#667085;font-weight:600;margin:0 2px 9px;letter-spacing:.3px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:10px}
+.mcard{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #eef1f6;
+  border-radius:12px;padding:11px 13px;text-decoration:none;color:inherit;transition:.16s}
+.mcard:active,.mcard:hover{border-color:#dbe4f5;transform:translateY(-1px)}
+.mtag{flex:0 0 auto;font-size:10.5px;font-weight:700;color:#c2410c;background:#fff7ed;
+  border:1px solid #fed7aa;border-radius:5px;padding:2px 6px}
+.mname{font-size:13px;font-weight:600;color:#101828}
+.murl{font-size:11px;color:#98a2b3;margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ft{text-align:center;color:#98a2b3;font-size:11.5px;padding:22px 16px 30px;line-height:1.7}
 @media(max-width:420px){.wrap{padding:13px}.grid{grid-template-columns:1fr;gap:11px}
   .hd{padding:26px 16px 24px}.hd h1{font-size:20px}}
@@ -154,6 +183,7 @@ body{margin:0;background:#f4f6fa;color:#101828;
   <div class="grid">
 %(cards)s
   </div>
+%(mirrors)s
 </div>
 <div class="ft">
   本页由 GitHub Actions 自动生成，新增子路径项目后会自动出现入口<br>
@@ -161,7 +191,7 @@ body{margin:0;background:#f4f6fa;color:#101828;
 </div>
 </body>
 </html>
-""" % {'owner': OWNER, 'n': len(projects), 'cards': '\n'.join(cards), 'stamp': stamp}
+""" % {'owner': OWNER, 'n': len(projects), 'cards': '\n'.join(cards), 'mirrors': mirror_html, 'stamp': stamp}
 
 
 def esc(s):
