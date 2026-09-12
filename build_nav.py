@@ -38,7 +38,7 @@ SOURCE_LABEL = {'github': 'GitHub Pages', 'cloudflare': 'Cloudflare Pages'}
 SOURCE_HOME = {'github': 'https://%s.github.io/' % OWNER, 'cloudflare': 'https://%s.pages.dev/' % OWNER}
 SOURCE_FOOT = {
     'github': '本页由 GitHub Actions 每天自动生成，新增 Pages 项目后入口会自动出现',
-    'cloudflare': '本页由 GitHub Actions 每天自动生成并部署，新增 Cloudflare Pages 项目后入口会自动出现',
+    'cloudflare': '本页托管于 Cloudflare Pages，与 GitHub Pages 那份互不交叉，新增 Pages 项目后入口会自动出现',
 }
 
 
