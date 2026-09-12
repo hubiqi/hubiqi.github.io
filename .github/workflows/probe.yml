@@ -1,0 +1,30 @@
+name: 外部可达性探测
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 探测各地址
+        run: |
+          for u in \
+            "https://hubiqi.workers.dev/" \
+            "https://hubiqi.hubiqi.workers.dev/" \
+            "https://flat-fog-e721.hubiqi.workers.dev/" \
+            "https://hubiqi.pages.dev/" \
+            "https://dashboard.pages.dev/" \
+            "https://dash.pages.dev/" \
+            "https://rider-dashboard.pages.dev/" \
+            "https://hubiqi-dash.pages.dev/" ; do
+            code=$(curl -s -m 20 -o /tmp/body.txt -w '%{http_code}' "$u" || echo "ERR")
+            size=$(wc -c < /tmp/body.txt 2>/dev/null || echo 0)
+            head=$(head -c 90 /tmp/body.txt 2>/dev/null | tr '\n' ' ')
+            echo "== $u"
+            echo "   HTTP=$code  bytes=$size"
+            echo "   body: $head"
+          done
+          echo "=== DNS 解析 ==="
+          for h in hubiqi.workers.dev hubiqi.hubiqi.workers.dev dashboard.pages.dev; do
+            echo "$h -> $(getent hosts $h | head -1 | awk '{print $1}' || echo NXDOMAIN)"
+          done
