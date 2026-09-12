@@ -1,8 +1,7 @@
 name: 站点外部探测（境外节点）
 
 # 用途：本机网络对 *.workers.dev 等域名 DNS 被污染，无法本地验证。
-# 手动触发一次，即可从境外节点确认各站点真实可达性。
-#   触发：GitHub → Actions → 本工作流 → Run workflow
+# 手动触发一次，即可从境外节点确认各站点真实可达性，并查询权威 DNS 记录。
 on:
   workflow_dispatch:
 
@@ -10,17 +9,44 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: 逐个探测
+      - name: DNS 与 HTTP 全套探测
         run: |
-          echo "| 地址 | 状态 | 大小 | 首行 |" >> $GITHUB_STEP_SUMMARY
-          echo "|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
-          for u in \
-            "https://hubiqi.pages.dev/" \
-            "https://hubiqi-dash.pages.dev/" \
-            "https://hubiqi-dashboard.pages.dev/" \
-            "https://hubiqi.github.io/" ; do
-            code=$(curl -s -m 20 -o /tmp/b.txt -w '%{http_code}' "$u" || echo ERR)
-            size=$(wc -c < /tmp/b.txt 2>/dev/null || echo 0)
-            echo "== $u -> HTTP=$code bytes=$size"
-            echo "| $u | $code | $size |" >> $GITHUB_STEP_SUMMARY
+          echo "## 外部可达性探测" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "===== 1. DNS 解析（系统解析器 + 权威 DoH）====="
+          for h in hubiqi.workers.dev hubiqi.hubiqi.workers.dev hubiqi.pages.dev; do
+            echo "--- $h"
+            sys=$(getent hosts "$h" | head -1 || true)
+            echo "   系统解析: ${sys:-<无记录>}"
+            doh=$(curl -s -m 20 -H 'accept: application/dns-json' \
+                  "https://cloudflare-dns.com/dns-query?name=$h&type=A" || true)
+            echo "   Cloudflare DoH: $doh"
+            doh2=$(curl -s -m 20 "https://dns.google/resolve?name=$h&type=A" || true)
+            echo "   Google DoH:     $doh2"
+            echo ""
           done
+
+          echo "===== 2. HTTP 实测 ====="
+          echo "| 地址 | HTTP | 字节 | 远端IP | 首行 |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          for u in \
+            "https://hubiqi.hubiqi.workers.dev/" \
+            "https://hubiqi.workers.dev/" \
+            "https://hubiqi.pages.dev/" ; do
+            out=$(curl -s -m 25 -o /tmp/b.txt -w '%{http_code}|%{size_download}|%{remote_ip}' "$u" 2>/dev/null || echo "FAIL||")
+            code=$(echo "$out" | cut -d'|' -f1)
+            size=$(echo "$out" | cut -d'|' -f2)
+            ip=$(echo "$out" | cut -d'|' -f3)
+            first=$(head -c 90 /tmp/b.txt 2>/dev/null | tr '\n' ' ')
+            echo "== $u   HTTP=$code  bytes=$size  ip=$ip"
+            echo "   内容: $first"
+            echo "| $u | $code | $size | $ip | $first |" >> $GITHUB_STEP_SUMMARY
+          done
+
+          echo "===== 3. workers.dev 根域结论 ====="
+          if getent hosts hubiqi.workers.dev > /dev/null; then
+            echo "根域 hubiqi.workers.dev 有解析记录"
+          else
+            echo "根域 hubiqi.workers.dev 无任何解析记录 -> 无法承载服务"
+          fi
