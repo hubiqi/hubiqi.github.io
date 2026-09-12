@@ -32,6 +32,7 @@ CF_SELF = 'hubiqi'
 # CF 项目没有描述字段，这里手工补；键是 CF 项目名
 CF_DESCS = {
     'hubiqi-dashboard': '骑手超时绩效看板',
+    'hubiqi-dash': '项目仪表盘 · 全部站点总览',
 }
 
 SOURCE_LABEL = {'github': 'GitHub Pages', 'cloudflare': 'Cloudflare Pages'}
