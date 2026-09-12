@@ -1,0 +1,27 @@
+name: workers.dev 根域批量探测
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query DoH
+        run: |
+          q() {
+            echo "### $1"
+            curl -s -H 'accept: application/dns-json' "https://cloudflare-dns.com/dns-query?name=$1&type=A" \
+              | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+an=[a['data'] for a in (d.get('Answer') or [])]
+au=[a['data'] for a in (d.get('Authority') or [])]
+s=d.get('Status')
+tag=''
+if s==0 and not an and au: tag='  <== NODATA: exists, ZERO records'
+elif s==3: tag='  <== NXDOMAIN'
+print('  Status=%s Answer=%s%s' % (s, an[:3] if an else '[]', tag))
+"
+          }
+          for n in hubiqi.workers.dev cloudflare.workers.dev demo.workers.dev myapp.workers.dev; do q $n; done
+          for n in hubiqi.hubiqi.workers.dev any-random-worker-zz9.hubiqi.workers.dev; do q $n; done
+          q hubiqi.pages.dev
