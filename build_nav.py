@@ -21,6 +21,18 @@ MIRRORS = {
     'rider-dashboard': [('Cloudflare', 'https://rider-dashboard-rwq.pages.dev/')],
 }
 
+# 导航页自身的多个入口，按部署位置互相链接
+# NAV_VARIANT=github（默认，hubiqi.github.io）| cf（hubiqi.pages.dev）
+VARIANT = (os.environ.get('NAV_VARIANT') or 'github').strip().lower()
+SELF_LINKS = {
+    'github': [('hubiqi.pages.dev', 'https://hubiqi.pages.dev/')],
+    'cf': [('hubiqi.github.io', 'https://%s.github.io/' % OWNER)],
+}
+HOST_LINE = {
+    'github': '本页由 GitHub Actions 自动生成，新增子路径项目后会自动出现入口',
+    'cf': '本页由 GitHub Actions 自动生成，镜像托管于 Cloudflare Pages，新增项目后会自动出现入口',
+}
+
 
 def api(path):
     req = urllib.request.Request(API + path)
@@ -122,6 +134,12 @@ def build_html(projects):
     now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
     stamp = now.strftime('%Y-%m-%d %H:%M')
 
+    links = SELF_LINKS.get(VARIANT, [])
+    extra = ''
+    if links:
+        extra = '<br>其他入口：' + '　·　'.join(
+            '<a href="%s">%s</a>' % (esc(u), esc(l)) for l, u in links)
+
     return """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -169,6 +187,7 @@ body{margin:0;background:#f4f6fa;color:#101828;
 .mname{font-size:13px;font-weight:600;color:#101828}
 .murl{font-size:11px;color:#98a2b3;margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ft{text-align:center;color:#98a2b3;font-size:11.5px;padding:22px 16px 30px;line-height:1.7}
+.ft a{color:#475467;text-decoration:none;border-bottom:1px solid #d0d5dd}
 @media(max-width:420px){.wrap{padding:13px}.grid{grid-template-columns:1fr;gap:11px}
   .hd{padding:26px 16px 24px}.hd h1{font-size:20px}}
 </style>
@@ -186,12 +205,13 @@ body{margin:0;background:#f4f6fa;color:#101828;
 %(mirrors)s
 </div>
 <div class="ft">
-  本页由 GitHub Actions 自动生成，新增子路径项目后会自动出现入口<br>
-  最后更新：%(stamp)s
+  %(hostline)s<br>
+  最后更新：%(stamp)s%(extra)s
 </div>
 </body>
 </html>
-""" % {'owner': OWNER, 'n': len(projects), 'cards': '\n'.join(cards), 'mirrors': mirror_html, 'stamp': stamp}
+""" % {'owner': OWNER, 'n': len(projects), 'cards': '\n'.join(cards), 'mirrors': mirror_html,
+       'stamp': stamp, 'hostline': HOST_LINE.get(VARIANT, HOST_LINE['github']), 'extra': extra}
 
 
 def esc(s):
