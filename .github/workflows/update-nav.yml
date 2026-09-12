@@ -1,0 +1,41 @@
+name: 更新项目导航
+
+# 目的：根路径的导航页随子路径项目自动增长。
+# 触发方式：每天定时、手动、以及根仓库自身变更时。
+on:
+  schedule:
+    - cron: '0 20 * * *'      # 每天 UTC 20:00（北京 04:00）
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'build_nav.py'
+      - '.github/workflows/update-nav.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 生成导航页
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 build_nav.py index.html
+
+      - name: 提交变更
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain index.html)" ]; then
+            git add index.html
+            git commit -m "自动更新项目导航 [skip ci]"
+            git push
+            echo "已提交更新"
+          else
+            echo "导航无变化，跳过提交"
+          fi
