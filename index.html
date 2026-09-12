@@ -30,22 +30,12 @@ body{margin:0;background:#f4f6fa;color:#101828;
 .desc{margin-top:5px;font-size:12.5px;color:#667085;line-height:1.55;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .meta{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pill{font-size:11px;color:#1d4ed8;background:#eef4ff;border-radius:6px;padding:2px 7px}
+.pill{font-size:11px;color:#1d4ed8;background:#eef4ff;border-radius:6px;padding:2px 7px;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .time{font-size:11px;color:#98a2b3}
 .empty{grid-column:1/-1;text-align:center;color:#98a2b3;font-size:13px;padding:44px 20px;
   background:#fff;border-radius:15px;border:1px dashed #d0d5dd}
-.mwrap{margin-top:22px}
-.mhd{font-size:12px;color:#667085;font-weight:600;margin:0 2px 9px;letter-spacing:.3px}
-.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:10px}
-.mcard{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #eef1f6;
-  border-radius:12px;padding:11px 13px;text-decoration:none;color:inherit;transition:.16s}
-.mcard:active,.mcard:hover{border-color:#dbe4f5;transform:translateY(-1px)}
-.mtag{flex:0 0 auto;font-size:10.5px;font-weight:700;color:#c2410c;background:#fff7ed;
-  border:1px solid #fed7aa;border-radius:5px;padding:2px 6px}
-.mname{font-size:13px;font-weight:600;color:#101828}
-.murl{font-size:11px;color:#98a2b3;margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ft{text-align:center;color:#98a2b3;font-size:11.5px;padding:22px 16px 30px;line-height:1.7}
-.ft a{color:#475467;text-decoration:none;border-bottom:1px solid #d0d5dd}
 @media(max-width:420px){.wrap{padding:13px}.grid{grid-template-columns:1fr;gap:11px}
   .hd{padding:26px 16px 24px}.hd h1{font-size:20px}}
 </style>
@@ -53,7 +43,7 @@ body{margin:0;background:#f4f6fa;color:#101828;
 <body>
 <div class="hd">
   <h1>项目导航</h1>
-  <p>hubiqi 的静态站点集合</p>
+  <p>hubiqi 的静态站点 · 托管于 GitHub Pages</p>
   <span class="count">共 2 个项目</span>
 </div>
 <div class="wrap">
@@ -75,18 +65,11 @@ body{margin:0;background:#f4f6fa;color:#101828;
       </div>
     </a>
   </div>
-<div class="mwrap">
-  <div class="mhd">备用镜像</div>
-  <div class="mgrid">
-    <a class="mcard" href="https://rider-dashboard-rwq.pages.dev/">
-      <span class="mtag">Cloudflare</span>      <span class="mname">rider-dashboard</span>      <span class="murl">rider-dashboard-rwq.pages.dev</span>
-    </a>
-  </div>
-</div>
 </div>
 <div class="ft">
-  本页由 GitHub Actions 自动生成，新增子路径项目后会自动出现入口<br>
-  最后更新：2026-09-12 22:55<br>其他入口：<a href="https://hubiqi.pages.dev/">hubiqi.pages.dev</a>
+  本页由 GitHub Actions 每天自动生成，新增 Pages 项目后入口会自动出现<br>
+  入口地址：hubiqi.github.io<br>
+  最后更新：2026-09-12 22:57
 </div>
 </body>
 </html>
