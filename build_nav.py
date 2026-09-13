@@ -41,9 +41,9 @@ EXTRAS = {
     'github': [
         {
             'name': 'deepseek harness',
-            'desc': 'DeepSeek Harness 服务入口 · 需先在浏览器完成登录',
-            'pill': '158.178.244.142:9080',
-            'url': 'http://158.178.244.142:9080/',
+            'desc': 'DeepSeek Harness 服务入口 · 直达登录页，需先在浏览器完成登录',
+            'pill': '158.178.244.142:9080/__login',
+            'url': 'http://158.178.244.142:9080/__login',
             'meta': '外部服务',
             'external': True,
         },
