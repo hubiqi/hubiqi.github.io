@@ -27,6 +27,8 @@ body{margin:0;background:#f4f6fa;color:#101828;
   font-weight:700;display:flex;align-items:center;justify-content:center}
 .body{min-width:0;flex:1 1 auto}
 .name{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ext{display:inline-block;vertical-align:middle;margin-left:6px;font-size:10px;font-weight:600;
+  color:#b45309;background:#fff4e5;border:1px solid #fcd9a8;border-radius:5px;padding:1px 5px}
 .desc{margin-top:5px;font-size:12.5px;color:#667085;line-height:1.55;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .meta{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -44,32 +46,40 @@ body{margin:0;background:#f4f6fa;color:#101828;
 <div class="hd">
   <h1>项目导航</h1>
   <p>hubiqi 的静态站点 · 托管于 GitHub Pages</p>
-  <span class="count">共 2 个项目</span>
+  <span class="count">共 3 个项目</span>
 </div>
 <div class="wrap">
   <div class="grid">
+    <a class="card" href="http://158.178.244.142:9080/" target="_blank" rel="noopener">
+      <div class="thumb" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">D</div>
+      <div class="body">
+        <div class="name">deepseek harness <span class="ext">外部</span></div>
+        <div class="desc">DeepSeek Harness 服务入口 · 需先在浏览器完成登录</div>
+        <div class="meta"><span class="pill">158.178.244.142:9080</span><span class="time">外部服务</span></div>
+      </div>
+    </a>
     <a class="card" href="https://hubiqi.github.io/rider-dashboard/">
-      <div class="thumb" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">R</div>
+      <div class="thumb" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">R</div>
       <div class="body">
         <div class="name">rider-dashboard</div>
         <div class="desc">骑手超时绩效看板</div>
-        <div class="meta"><span class="pill">/rider-dashboard/</span><span class="time">今天更新</span></div>
+        <div class="meta"><span class="pill">/rider-dashboard/</span><span class="time">昨天更新</span></div>
       </div>
     </a>
     <a class="card" href="https://hubiqi.github.io/demo/">
-      <div class="thumb" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">D</div>
+      <div class="thumb" style="background:linear-gradient(135deg,#0e7490,#06b6d4)">D</div>
       <div class="body">
         <div class="name">demo</div>
         <div class="desc">示例项目（用于验证导航自动更新）</div>
-        <div class="meta"><span class="pill">/demo/</span><span class="time">今天更新</span></div>
+        <div class="meta"><span class="pill">/demo/</span><span class="time">昨天更新</span></div>
       </div>
     </a>
   </div>
 </div>
 <div class="ft">
-  本页由 GitHub Actions 每天自动生成，新增 Pages 项目后入口会自动出现<br>
+  本页由 GitHub Actions 每天自动生成，新增 Pages 项目后入口会自动出现；标「外部」的入口不托管于 GitHub Pages<br>
   入口地址：hubiqi.github.io<br>
-  最后更新：2026-09-13 05:48
+  最后更新：2026-09-14 00:45
 </div>
 </body>
 </html>

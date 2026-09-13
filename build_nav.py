@@ -35,10 +35,26 @@ CF_DESCS = {
     'hubiqi-dash': '项目仪表盘 · 全部站点总览',
 }
 
+# 手工补充的入口（不来自任何 API，按来源分别挂载）。
+# 用于指向既不在 GitHub Pages 也不在 Cloudflare Pages 上的服务（如自建服务器 IP）。
+EXTRAS = {
+    'github': [
+        {
+            'name': 'deepseek harness',
+            'desc': 'DeepSeek Harness 服务入口 · 需先在浏览器完成登录',
+            'pill': '158.178.244.142:9080',
+            'url': 'http://158.178.244.142:9080/',
+            'meta': '外部服务',
+            'external': True,
+        },
+    ],
+    'cloudflare': [],
+}
+
 SOURCE_LABEL = {'github': 'GitHub Pages', 'cloudflare': 'Cloudflare Pages'}
 SOURCE_HOME = {'github': 'https://%s.github.io/' % OWNER, 'cloudflare': 'https://%s.pages.dev/' % OWNER}
 SOURCE_FOOT = {
-    'github': '本页由 GitHub Actions 每天自动生成，新增 Pages 项目后入口会自动出现',
+    'github': '本页由 GitHub Actions 每天自动生成，新增 Pages 项目后入口会自动出现；标「外部」的入口不托管于 GitHub Pages',
     'cloudflare': '本页托管于 Cloudflare Pages，与 GitHub Pages 那份互不交叉，新增 Pages 项目后入口会自动出现',
 }
 
@@ -121,7 +137,7 @@ def list_github():
         if len(repos) < 100:
             break
         page += 1
-    return out
+    return EXTRAS.get('github', []) + out
 
 
 # ------------------------------------------------------------ Cloudflare
@@ -152,7 +168,7 @@ def list_cloudflare():
             'url': 'https://%s/' % dom,
             'meta': human(parse_dt(ld.get('created_on'))),
         })
-    return out
+    return EXTRAS.get('cloudflare', []) + out
 
 
 # ------------------------------------------------------------------ 页面
@@ -173,17 +189,20 @@ def build_html(projects):
     for i, p in enumerate(projects):
         c1, c2 = PALETTE[i % len(PALETTE)]
         cards.append(
-            '    <a class="card" href="%(url)s">\n'
+            '    <a class="card" href="%(url)s"%(tgt)s>\n'
             '      <div class="thumb" style="background:linear-gradient(135deg,%(c1)s,%(c2)s)">%(ini)s</div>\n'
             '      <div class="body">\n'
-            '        <div class="name">%(name)s</div>\n'
+            '        <div class="name">%(name)s%(extname)s</div>\n'
             '        <div class="desc">%(desc)s</div>\n'
             '        <div class="meta"><span class="pill">%(pill)s</span><span class="time">%(meta)s</span></div>\n'
             '      </div>\n'
             '    </a>' % {
                 'url': esc(p['url']), 'c1': c1, 'c2': c2,
+                'tgt': ' target="_blank" rel="noopener"' if p.get('external') else '',
                 'ini': esc(p['name'][0].upper() if p['name'] else '?'),
-                'name': esc(p['name']), 'desc': esc(p['desc']),
+                'name': esc(p['name']),
+                'extname': ' <span class="ext">外部</span>' if p.get('external') else '',
+                'desc': esc(p['desc']),
                 'pill': esc(p['pill']), 'meta': esc(p['meta'])})
 
     if not cards:
@@ -220,6 +239,8 @@ body{margin:0;background:#f4f6fa;color:#101828;
   font-weight:700;display:flex;align-items:center;justify-content:center}
 .body{min-width:0;flex:1 1 auto}
 .name{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ext{display:inline-block;vertical-align:middle;margin-left:6px;font-size:10px;font-weight:600;
+  color:#b45309;background:#fff4e5;border:1px solid #fcd9a8;border-radius:5px;padding:1px 5px}
 .desc{margin-top:5px;font-size:12.5px;color:#667085;line-height:1.55;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .meta{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
