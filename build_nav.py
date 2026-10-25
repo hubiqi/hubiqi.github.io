@@ -51,6 +51,11 @@ EXTRAS = {
     'cloudflare': [],
 }
 
+# 仓库名 -> 页面显示名（不填则直接用仓库名）
+TITLES = {
+    'fengshen-profit': '风神利润计算器',
+}
+
 SOURCE_LABEL = {'github': 'GitHub Pages', 'cloudflare': 'Cloudflare Pages'}
 SOURCE_HOME = {'github': 'https://%s.github.io/' % OWNER, 'cloudflare': 'https://%s.pages.dev/' % OWNER}
 SOURCE_FOOT = {
@@ -128,7 +133,7 @@ def list_github():
             if not r.get('has_pages'):
                 continue
             out.append({
-                'name': r['name'],
+                'name': TITLES.get(r['name']) or r['name'],
                 'desc': (r.get('description') or '').strip() or '暂无描述',
                 'pill': '/%s/' % r['name'],
                 'url': 'https://%s.github.io/%s/' % (OWNER, r['name']),
