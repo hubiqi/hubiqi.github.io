@@ -47,6 +47,14 @@ EXTRAS = {
             'meta': '外部服务',
             'external': True,
         },
+        {
+            'name': 'Sherlock 用户名搜索',
+            'desc': '跨 400+ 站点查用户名是否存在 · 服务端运行，可指定站点',
+            'pill': '158.178.244.142:15146',
+            'url': 'http://158.178.244.142:15146/',
+            'meta': '外部服务',
+            'external': True,
+        },
     ],
     'cloudflare': [],
 }
